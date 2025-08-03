@@ -1,7 +1,7 @@
 import java.util.*;
 public class Main
 {
-	public static void VowlOrNot(String[] args) {
+	public static void VowelOrNot(String[] args) {
 	Scanner input = new Scanner(System.in);
 	char ch= input.next().charAt(0);
 		 System.out.println(" first character is "+ch);
