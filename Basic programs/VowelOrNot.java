@@ -1,16 +1,18 @@
 import java.util.*;
-public class Main
+public class VowelOrNot
 {
-	public static void VowelOrNot(String[] args) {
-	Scanner input = new Scanner(System.in);
-	char ch= input.next().charAt(0);
-		 System.out.println(" first character is "+ch);
-	if ((ch =='a') || (ch=='e') || (ch== 'i') || (ch=='o') || (ch=='u') || (ch=='A') || (ch=='E') || (ch== 'I')  || (ch=='O') || (ch=='U')) 
-{ 
-		        System.out.println(ch+" is vowel" );
-}
-		    else {
-		        System.out.println( ch+ " is consonant");
-		    }
-	  }
+	public static void main(String[] args) 
+	{
+		Scanner input = new Scanner(System.in);
+		char ch= input.next().charAt(0);
+		System.out.println(" first character is "+ch);
+		if ((ch =='a') || (ch=='e') || (ch== 'i') || (ch=='o') || (ch=='u') || (ch=='A') || (ch=='E') || (ch== 'I')  || (ch=='O') || (ch=='U')) 
+		{
+			System.out.println(ch+" is vowel" );
+		}
+		else 
+		{
+			System.out.println( ch+ " is consonant");
+		}
+	}
 }
