@@ -19,6 +19,6 @@ public class SumOfMatrice
 		    }
 		    
 		}
-		System.out.print("The Sum Of Matrice is : "sum);
+		System.out.print("The Sum Of Matrice is : "+sum);
 	}
 }
