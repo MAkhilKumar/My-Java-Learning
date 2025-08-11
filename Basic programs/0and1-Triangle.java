@@ -1,9 +1,9 @@
 import java.util.*;
-public class Main
+public class 0and1-Triangle
 {
 	public static void main(String[] args) {
 	    Scanner scan=new Scanner(System.in);
-//	  0 and 1 triangle
+
         System.out.print("Enter Number : ");
         int no=scan.nextInt();
         for(int i=0;i<no;i++)
