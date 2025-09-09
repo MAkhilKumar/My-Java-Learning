@@ -1,5 +1,5 @@
 import java.util.*;
-public class pascalPattern
+public class NumberPyramidPattern
 {
 	public static void main(String[] args)
 	{
