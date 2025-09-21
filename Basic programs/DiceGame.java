@@ -7,7 +7,7 @@ public class DiceGame
 		System.out.print("Guess the dice  number : ");
 		int number=input.nextInt();
 		Random ran=new Random();
-		int dice=ran.nextInt(6);
+		int dice=ran.nextInt(6)+1;
 		
 		if(number == dice)
 		{
