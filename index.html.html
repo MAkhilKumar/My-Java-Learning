@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Game Zone</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --neon-cyan: #00fff7;
+  --neon-pink: #ff00aa;
+  --neon-yellow: #ffe600;
+  --neon-green: #00ff88;
+  --neon-purple: #bf00ff;
+  --dark-bg: #06060f;
+  --dark-card: #0d0d1a;
+  --dark-card2: #111128;
+  --border-glow: rgba(0,255,247,0.3);
+  --text-primary: #e8e8ff;
+  --text-dim: #7777aa;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* PARTICLES */
+#particles-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* PAGES */
+.page {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  z-index: 10;
+  overflow-y: auto;
+}
+.page.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ====== LOGIN PAGE ====== */
+#login-page {
+  background: radial-gradient(ellipse at 50% 40%, #0f0f2a 0%, #06060f 70%);
+}
+
+.login-container {
+  position: relative;
+  text-align: center;
+  padding: 60px 50px;
+  background: rgba(13,13,26,0.85);
+  border: 1px solid var(--border-glow);
+  border-radius: 24px;
+  box-shadow: 0 0 60px rgba(0,255,247,0.08), 0 0 120px rgba(191,0,255,0.05);
+  backdrop-filter: blur(20px);
+  max-width: 480px;
+  width: 90%;
+  animation: loginPop 0.8s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+
+@keyframes loginPop {
+  from { transform: scale(0.8) translateY(40px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.logo-wrap {
+  margin-bottom: 32px;
+}
+
+.logo-icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 12px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.logo-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink), var(--neon-yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-shadow: none;
+}
+
+.logo-sub {
+  font-size: 14px;
+  color: var(--text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.input-wrap {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(0,255,247,0.05);
+  border: 1px solid rgba(0,255,247,0.2);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.input-wrap input::placeholder { color: var(--text-dim); }
+
+.input-wrap input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0,255,247,0.2), inset 0 0 20px rgba(0,255,247,0.05);
+  background: rgba(0,255,247,0.08);
+}
+
+.btn-start {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.btn-start::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -60%;
+  width: 40%; height: 200%;
+  background: rgba(255,255,255,0.15);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.btn-start:hover::before { left: 120%; }
+
+.btn-start:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,255,247,0.4), 0 0 60px rgba(191,0,255,0.2);
+}
+
+.btn-start:active { transform: translateY(0); }
+
+/* ====== DASHBOARD ====== */
+#dashboard-page {
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+.dashboard-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* HEADER */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(0,255,247,0.1);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.dash-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dash-welcome {
+  font-size: clamp(13px, 2.5vw, 16px);
+  color: var(--neon-yellow);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.dash-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid rgba(0,255,247,0.3);
+  border-radius: 8px;
+  color: var(--neon-cyan);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.nav-btn:hover {
+  background: rgba(0,255,247,0.1);
+  box-shadow: 0 0 15px rgba(0,255,247,0.3);
+}
+
+/* HERO */
+.dash-hero {
+  text-align: center;
+  padding: 48px 0 36px;
+}
+
+.dash-hero h1 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(24px, 5vw, 42px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 50%, var(--neon-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+.dash-hero p {
+  color: var(--text-dim);
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+/* GAME CARDS */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.game-card {
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  position: relative;
+  overflow: hidden;
+  animation: cardReveal 0.6s ease both;
+}
+
+.game-card:nth-child(1) { animation-delay: 0.1s; --card-color: var(--neon-cyan); }
+.game-card:nth-child(2) { animation-delay: 0.2s; --card-color: var(--neon-pink); }
+.game-card:nth-child(3) { animation-delay: 0.3s; --card-color: var(--neon-green); }
+.game-card:nth-child(4) { animation-delay: 0.4s; --card-color: var(--neon-yellow); }
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--card-color) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.game-card:hover::before { opacity: 0.06; }
+
+.game-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--card-color);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px color-mix(in srgb, var(--card-color) 30%, transparent);
+}
+
+.card-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 0 12px var(--card-color));
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+
+.card-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.btn-play {
+  padding: 10px 28px;
+  background: transparent;
+  border: 1px solid var(--card-color);
+  border-radius: 8px;
+  color: var(--card-color);
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.btn-play:hover {
+  background: var(--card-color);
+  color: #000;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--card-color) 50%, transparent);
+}
+
+/* ====== LEADERBOARD SECTION ====== */
+.leaderboard-section {
+  margin-top: 48px;
+  background: var(--dark-card);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 32px;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-yellow);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.leaderboard-table td {
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.rank-1 td:first-child { color: var(--neon-yellow); }
+.rank-2 td:first-child { color: #c0c0c0; }
+.rank-3 td:first-child { color: #cd7f32; }
+
+/* ====== GAME SCREENS ====== */
+#game-screen {
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.game-wrapper {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.btn-back {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-back:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+
+.game-title-bar {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ====== TIC TAC TOE ====== */
+#ttt-game { display: none; }
+#ttt-game.show { display: block; }
+
+.ttt-score {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.score-box {
+  flex: 1;
+  max-width: 140px;
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.score-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.score-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.score-value.pink { color: var(--neon-pink); }
+.score-value.dim { color: var(--text-dim); }
+
+.ttt-status {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--neon-yellow);
+  margin-bottom: 20px;
+  min-height: 28px;
+  letter-spacing: 1px;
+}
+
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 320px;
+  margin: 0 auto 24px;
+}
+
+.ttt-cell {
+  aspect-ratio: 1;
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 36px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ttt-cell:hover:not(.filled) {
+  background: rgba(0,255,247,0.08);
+  border-color: rgba(0,255,247,0.3);
+}
+
+.ttt-cell.x { color: var(--neon-cyan); text-shadow: 0 0 20px var(--neon-cyan); }
+.ttt-cell.o { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); }
+.ttt-cell.win { background: rgba(255,230,0,0.1); border-color: var(--neon-yellow); animation: winPulse 0.6s ease; }
+
+@keyframes winPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.ttt-cell.filled { cursor: not-allowed; }
+
+.btn-restart {
+  display: block;
+  margin: 0 auto;
+  padding: 12px 32px;
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  border-radius: 10px;
+  color: var(--neon-cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-restart:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0,255,247,0.5);
+}
+
+/* ====== QUIZ GAME ====== */
+#quiz-game { display: none; }
+#quiz-game.show { display: block; }
+
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quiz-progress-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0 16px;
+}
+
+.quiz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.quiz-q-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.quiz-score-display {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px;
+  color: var(--neon-green);
+  white-space: nowrap;
+}
+
+.quiz-question {
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 28px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.quiz-opt {
+  padding: 16px;
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.quiz-opt:hover:not(:disabled) {
+  background: rgba(0,255,247,0.08);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.quiz-opt.correct { background: rgba(0,255,136,0.15); border-color: var(--neon-green); color: var(--neon-green); }
+.quiz-opt.wrong { background: rgba(255,0,100,0.15); border-color: var(--neon-pink); color: var(--neon-pink); }
+.quiz-opt:disabled { cursor: not-allowed; opacity: 0.8; }
+
+.btn-next {
+  display: none;
+  margin: 0 auto;
+  padding: 12px 36px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-next.show { display: block; }
+.btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,255,247,0.3); }
+
+/* QUIZ RESULT */
+.quiz-result {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+.quiz-result.show { display: block; }
+
+.result-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 72px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 20px 0;
+}
+
+.result-msg {
+  font-size: 20px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+/* ====== MEMORY GAME ====== */
+#memory-game { display: none; }
+#memory-game.show { display: block; }
+
+.memory-meta {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.mem-stat {
+  text-align: center;
+}
+
+.mem-stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.mem-stat-val {
+  font-family: 'Orbitron', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.memory-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto 24px;
+}
+
+.mem-card {
+  aspect-ratio: 1;
+  cursor: pointer;
+  perspective: 600px;
+  border-radius: 10px;
+}
+
+.mem-card-inner {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  border-radius: 10px;
+}
+
+.mem-card.flipped .mem-card-inner,
+.mem-card.matched .mem-card-inner {
+  transform: rotateY(180deg);
+}
+
+.mem-card-front,
+.mem-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.mem-card-front {
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-dim);
+  font-family: 'Orbitron', monospace;
+  font-size: 20px;
+}
+
+.mem-card-back {
+  background: var(--dark-card2);
+  border: 1px solid rgba(0,255,247,0.3);
+  transform: rotateY(180deg);
+}
+
+.mem-card.matched .mem-card-back {
+  background: rgba(0,255,136,0.1);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 15px rgba(0,255,136,0.3);
+}
+
+/* ====== ROCK PAPER SCISSORS ====== */
+#rps-game { display: none; }
+#rps-game.show { display: block; }
+
+.rps-arena {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.rps-player {
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.rps-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.rps-hand {
+  width: 100px;
+  height: 100px;
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.rps-hand.cyan { border-color: var(--neon-cyan); box-shadow: 0 0 25px rgba(0,255,247,0.3); }
+.rps-hand.pink { border-color: var(--neon-pink); box-shadow: 0 0 25px rgba(255,0,170,0.3); }
+
+.rps-vs {
+  font-family: 'Orbitron', monospace;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--neon-yellow);
+}
+
+.rps-result-text {
+  text-align: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  min-height: 36px;
+  margin-bottom: 24px;
+}
+
+.rps-result-text.win { color: var(--neon-green); }
+.rps-result-text.lose { color: var(--neon-pink); }
+.rps-result-text.draw { color: var(--neon-yellow); }
+
+.rps-choices {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.rps-choice-btn {
+  width: 80px;
+  height: 80px;
+  background: var(--dark-card2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  font-size: 40px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rps-choice-btn:hover {
+  transform: translateY(-6px) scale(1.1);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 10px 30px rgba(0,255,247,0.25);
+}
+
+.rps-score-row {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.rps-score-item {
+  text-align: center;
+}
+
+.rps-score-item .label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.rps-score-item .val {
+  font-family: 'Orbitron', monospace;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.val.cyan { color: var(--neon-cyan); }
+.val.pink { color: var(--neon-pink); }
+.val.dim { color: var(--text-dim); }
+
+/* ====== WIN POPUP ====== */
+.win-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,6,15,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.win-popup-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.win-popup {
+  background: var(--dark-card);
+  border: 1px solid var(--neon-yellow);
+  border-radius: 24px;
+  padding: 48px 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 0 60px rgba(255,230,0,0.2);
+  animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.win-emoji { font-size: 72px; margin-bottom: 16px; }
+.win-title { font-family: 'Orbitron', monospace; font-size: 28px; font-weight: 900; color: var(--neon-yellow); margin-bottom: 12px; }
+.win-sub { font-size: 16px; color: var(--text-dim); margin-bottom: 28px; line-height: 1.5; }
+
+.win-popup-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-popup {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-popup.primary { background: var(--neon-yellow); color: #000; }
+.btn-popup.primary:hover { box-shadow: 0 0 25px rgba(255,230,0,0.5); transform: translateY(-2px); }
+.btn-popup.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-dim); }
+.btn-popup.secondary:hover { border-color: var(--text-dim); }
+
+/* ====== FOOTER ====== */
+.dash-footer {
+  text-align: center;
+  padding: 32px 0;
+  margin-top: 48px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.footer-text {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+}
+
+.footer-text span { color: var(--neon-pink); }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 600px) {
+  .quiz-options { grid-template-columns: 1fr; }
+  .memory-board { grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .mem-card-front, .mem-card-back { font-size: 22px; }
+  .ttt-board { max-width: 270px; gap: 8px; }
+  .ttt-cell { font-size: 28px; }
+  .score-box { padding: 12px; }
+  .score-value { font-size: 22px; }
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+/* GLOW ANIMATIONS */
+@keyframes neonPulse {
+  0%, 100% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px var(--neon-cyan); }
+  50% { text-shadow: 0 0 5px var(--neon-cyan), 0 0 15px var(--neon-cyan); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.rps-bounce {
+  animation: bounce 0.4s ease;
+}
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="page active">
+  <div class="login-container">
+    <div class="logo-wrap">
+      <span class="logo-icon">🎮</span>
+      <div class="logo-title">Mini Game Zone</div>
+      <div class="logo-sub">Your Arcade Universe</div>
+    </div>
+    <div class="input-wrap">
+      <input type="text" id="player-name-input" placeholder="Enter Your Name" maxlength="20" autocomplete="off">
+    </div>
+    <button class="btn-start" onclick="startPlaying()">▶ Start Playing</button>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashboard-page" class="page">
+  <div class="dashboard-inner">
+    <header class="dash-header">
+      <div class="dash-logo">🎮 Mini Game Zone</div>
+      <div class="dash-welcome" id="welcome-text">Welcome, Player!</div>
+      <div class="dash-nav">
+        <button class="nav-btn" onclick="clearLeaderboard()">🗑 Clear Board</button>
+        <button class="nav-btn" onclick="logout()">⏻ Logout</button>
+      </div>
+    </header>
+
+    <div class="dash-hero">
+      <h1>Choose Your Game</h1>
+      <p>Pick a challenge and prove your skills</p>
+    </div>
+
+    <div class="games-grid">
+      <div class="game-card" onclick="openGame('ttt')">
+        <span class="card-icon">❌⭕</span>
+        <div class="card-title">Tic Tac Toe</div>
+        <div class="card-desc">Classic strategy game. Beat the computer in this timeless battle of X's and O's!</div>
+        <button class="btn-play">Play Now</button>
+      </div>
+      <div class="game-card" onclick="openGame('quiz')">
+        <span class="card-icon">🏏</span>
+        <div class="card-title">IPL 2026 Quiz</div>
+        <div class="card-desc">Test your IPL knowledge! Teams, players, records — how much do you know?</div>
+        <button class="btn-play">Play Now</button>
+      </div>
+      <div class="game-card" onclick="openGame('memory')">
+        <span class="card-icon">🃏</span>
+        <div class="card-title">Memory Card Flip</div>
+        <div class="card-desc">Flip cards and find matching pairs. Train your memory and beat the clock!</div>
+        <button class="btn-play">Play Now</button>
+      </div>
+      <div class="game-card" onclick="openGame('rps')">
+        <span class="card-icon">✊✋✌️</span>
+        <div class="card-title">Rock Paper Scissors</div>
+        <div class="card-desc">The ultimate hand game! Challenge the computer in a best-of-all-time showdown.</div>
+        <button class="btn-play">Play Now</button>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="leaderboard-section" id="leaderboard-section">
+      <div class="section-title">🏆 Leaderboard</div>
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Game</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body">
+          <tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:20px;">No records yet. Play some games!</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="dash-footer">
+      <div class="footer-text">Made with ❤️ by <span>Akhil Kumar</span> · Mini Game Zone &copy; 2026</div>
+    </footer>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="page">
+  <div class="game-wrapper">
+    <div class="game-header">
+      <button class="btn-back" onclick="goToDashboard()">← Back</button>
+      <div class="game-title-bar" id="game-title-bar">Game</div>
+    </div>
+
+    <!-- TIC TAC TOE -->
+    <div id="ttt-game">
+      <div class="ttt-score">
+        <div class="score-box">
+          <div class="score-label">You (X)</div>
+          <div class="score-value" id="ttt-p-score">0</div>
+        </div>
+        <div class="score-box">
+          <div class="score-label">Board</div>
+          <div class="score-value dim" id="ttt-d-score">3×3</div>
+        </div>
+        <div class="score-box">
+          <div class="score-label">CPU (O)</div>
+          <div class="score-value pink" id="ttt-c-score">0</div>
+        </div>
+      </div>
+      <div class="ttt-status" id="ttt-status">Your turn (X)</div>
+      <div class="ttt-board" id="ttt-board"></div>
+      <button class="btn-restart" onclick="tttRestart()">↺ New Game</button>
+    </div>
+
+    <!-- QUIZ GAME -->
+    <div id="quiz-game">
+      <div class="quiz-meta">
+        <span class="quiz-q-num" id="quiz-qnum">Q 1 / 10</span>
+        <div class="quiz-progress-wrap">
+          <div class="quiz-progress-bar" id="quiz-prog" style="width:10%"></div>
+        </div>
+        <span class="quiz-score-display" id="quiz-score-disp">Score: 0</span>
+      </div>
+      <div class="quiz-question" id="quiz-question"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <button class="btn-next" id="btn-next" onclick="quizNext()">Next →</button>
+
+      <div class="quiz-result" id="quiz-result">
+        <div style="font-size:48px;margin-bottom:16px;" id="result-emoji">🏆</div>
+        <div class="result-score" id="result-score">0 / 10</div>
+        <div class="result-msg" id="result-msg">Great job!</div>
+        <button class="btn-restart" onclick="quizRestart()" style="display:inline-block;margin-bottom:12px;">↺ Play Again</button>
+        <br>
+        <button class="btn-restart" onclick="goToDashboard()" style="display:inline-block;border-color:var(--neon-pink);color:var(--neon-pink);">↩ Dashboard</button>
+      </div>
+    </div>
+
+    <!-- MEMORY GAME -->
+    <div id="memory-game">
+      <div class="memory-meta">
+        <div class="mem-stat">
+          <div class="mem-stat-label">Time</div>
+          <div class="mem-stat-val" id="mem-timer">0:00</div>
+        </div>
+        <div class="mem-stat">
+          <div class="mem-stat-label">Moves</div>
+          <div class="mem-stat-val" id="mem-moves">0</div>
+        </div>
+        <div class="mem-stat">
+          <div class="mem-stat-label">Pairs</div>
+          <div class="mem-stat-val" id="mem-pairs">0 / 8</div>
+        </div>
+      </div>
+      <div class="memory-board" id="memory-board"></div>
+      <button class="btn-restart" onclick="memRestart()">↺ Restart</button>
+    </div>
+
+    <!-- ROCK PAPER SCISSORS -->
+    <div id="rps-game">
+      <div class="rps-score-row">
+        <div class="rps-score-item">
+          <div class="label">You</div>
+          <div class="val cyan" id="rps-p-score">0</div>
+        </div>
+        <div class="rps-score-item">
+          <div class="label">Draws</div>
+          <div class="val dim" id="rps-d-score">0</div>
+        </div>
+        <div class="rps-score-item">
+          <div class="label">CPU</div>
+          <div class="val pink" id="rps-c-score">0</div>
+        </div>
+      </div>
+
+      <div class="rps-arena">
+        <div class="rps-player">
+          <div class="rps-label">You</div>
+          <div class="rps-hand cyan" id="rps-p-hand">❓</div>
+        </div>
+        <div class="rps-vs">VS</div>
+        <div class="rps-player">
+          <div class="rps-label">CPU</div>
+          <div class="rps-hand pink" id="rps-c-hand">❓</div>
+        </div>
+      </div>
+
+      <div class="rps-result-text" id="rps-result"></div>
+
+      <div class="rps-choices">
+        <button class="rps-choice-btn" onclick="rpsPlay('rock')" title="Rock">✊</button>
+        <button class="rps-choice-btn" onclick="rpsPlay('paper')" title="Paper">✋</button>
+        <button class="rps-choice-btn" onclick="rpsPlay('scissors')" title="Scissors">✌️</button>
+      </div>
+      <button class="btn-restart" onclick="rpsReset()">↺ Reset Scores</button>
+    </div>
+  </div>
+</div>
+
+<!-- WIN POPUP -->
+<div class="win-popup-overlay" id="win-popup-overlay">
+  <div class="win-popup">
+    <div class="win-emoji" id="popup-emoji">🎉</div>
+    <div class="win-title" id="popup-title">You Win!</div>
+    <div class="win-sub" id="popup-sub">Amazing performance!</div>
+    <div class="win-popup-btns">
+      <button class="btn-popup primary" id="popup-btn1" onclick="closePopup()">Play Again</button>
+      <button class="btn-popup secondary" onclick="goToDashboard()">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// PARTICLES
+// ============================================================
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const COLORS = ['#00fff7','#ff00aa','#ffe600','#00ff88','#bf00ff'];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 0.5,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    alpha: Math.random() * 0.5 + 0.1
+  });
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const p of particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.alpha;
+    ctx.fill();
+  }
+  // draw lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = particles[i].color;
+        ctx.globalAlpha = (1 - dist / 100) * 0.08;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ============================================================
+// SOUND EFFECTS
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playSound(type) {
+  try {
+    const ac = getAudioCtx();
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain);
+    gain.connect(ac.destination);
+    const configs = {
+      click: { freq: 800, dur: 0.08, wave: 'square' },
+      win: { freq: [523, 659, 784], dur: 0.4, wave: 'sine' },
+      lose: { freq: 200, dur: 0.3, wave: 'sawtooth' },
+      flip: { freq: 400, dur: 0.1, wave: 'sine' },
+      match: { freq: [600, 800], dur: 0.25, wave: 'sine' },
+      correct: { freq: 660, dur: 0.2, wave: 'sine' },
+      wrong: { freq: 220, dur: 0.3, wave: 'sawtooth' },
+    };
+    const c = configs[type] || configs.click;
+    if (Array.isArray(c.freq)) {
+      c.freq.forEach((f, i) => {
+        const o2 = ac.createOscillator();
+        const g2 = ac.createGain();
+        o2.connect(g2); g2.connect(ac.destination);
+        o2.type = c.wave;
+        o2.frequency.value = f;
+        g2.gain.setValueAtTime(0.15, ac.currentTime + i * 0.1);
+        g2.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + i * 0.1 + c.dur);
+        o2.start(ac.currentTime + i * 0.1);
+        o2.stop(ac.currentTime + i * 0.1 + c.dur);
+      });
+    } else {
+      osc.type = c.wave;
+      osc.frequency.value = c.freq;
+      gain.gain.setValueAtTime(0.15, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + c.dur);
+      osc.start(); osc.stop(ac.currentTime + c.dur);
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+let playerName = '';
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startPlaying() {
+  playSound('click');
+  const input = document.getElementById('player-name-input');
+  const name = input.value.trim();
+  if (!name) {
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 400);
+    input.placeholder = 'Please enter your name!';
+    return;
+  }
+  playerName = name;
+  localStorage.setItem('mgz_player', name);
+  document.getElementById('welcome-text').textContent = `Welcome, ${name}!`;
+  showPage('dashboard-page');
+  renderLeaderboard();
+}
+
+function logout() {
+  playSound('click');
+  showPage('login-page');
+}
+
+function goToDashboard() {
+  playSound('click');
+  closePopup();
+  stopMemTimer();
+  showPage('dashboard-page');
+  renderLeaderboard();
+}
+
+// Try auto-login
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('mgz_player');
+  if (saved) {
+    playerName = saved;
+    document.getElementById('player-name-input').value = saved;
+    document.getElementById('welcome-text').textContent = `Welcome, ${saved}!`;
+  }
+});
+
+document.getElementById('player-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startPlaying();
+});
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+function saveScore(game, score) {
+  const records = JSON.parse(localStorage.getItem('mgz_scores') || '[]');
+  records.push({ player: playerName || 'Player', game, score, date: Date.now() });
+  records.sort((a, b) => b.score - a.score);
+  localStorage.setItem('mgz_scores', JSON.stringify(records.slice(0, 20)));
+}
+
+function renderLeaderboard() {
+  const records = JSON.parse(localStorage.getItem('mgz_scores') || '[]');
+  const tbody = document.getElementById('leaderboard-body');
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:20px;">No records yet. Play some games!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.slice(0, 10).map((r, i) => `
+    <tr class="${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">
+      <td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+      <td>${r.player}</td>
+      <td>${r.game}</td>
+      <td style="color:var(--neon-cyan);font-family:'Orbitron',monospace;">${r.score}</td>
+    </tr>
+  `).join('');
+}
+
+function clearLeaderboard() {
+  playSound('click');
+  if (confirm('Clear all leaderboard scores?')) {
+    localStorage.removeItem('mgz_scores');
+    renderLeaderboard();
+  }
+}
+
+// ============================================================
+// OPEN GAME
+// ============================================================
+function openGame(type) {
+  playSound('click');
+  showPage('game-screen');
+  ['ttt-game','quiz-game','memory-game','rps-game'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+    document.getElementById(id).style.display = 'none';
+  });
+
+  const map = { ttt: ['ttt-game','❌⭕ Tic Tac Toe'], quiz: ['quiz-game','🏏 IPL 2026 Quiz'], memory: ['memory-game','🃏 Memory Card Flip'], rps: ['rps-game','✊ Rock Paper Scissors'] };
+  const [gameId, title] = map[type];
+  document.getElementById('game-title-bar').textContent = title;
+  document.getElementById(gameId).style.display = 'block';
+  document.getElementById(gameId).classList.add('show');
+
+  if (type === 'ttt') initTTT();
+  if (type === 'quiz') initQuiz();
+  if (type === 'memory') initMemory();
+  if (type === 'rps') initRPS();
+}
+
+// ============================================================
+// WIN POPUP
+// ============================================================
+let popupCallback = null;
+
+function showWinPopup(emoji, title, sub, btnLabel, callback) {
+  document.getElementById('popup-emoji').textContent = emoji;
+  document.getElementById('popup-title').textContent = title;
+  document.getElementById('popup-sub').textContent = sub;
+  document.getElementById('popup-btn1').textContent = btnLabel;
+  popupCallback = callback;
+  document.getElementById('win-popup-overlay').classList.add('show');
+  playSound('win');
+}
+
+function closePopup() {
+  document.getElementById('win-popup-overlay').classList.remove('show');
+  if (popupCallback) { popupCallback(); popupCallback = null; }
+}
+
+// ============================================================
+// TIC TAC TOE — No Draw! Board expands until someone wins
+// ============================================================
+let tttBoard, tttGameOver, tttSize, tttPlayerScore = 0, tttCPUScore = 0;
+
+// Dynamically compute win combos for any NxN board
+function getWinCombos(size) {
+  const combos = [];
+  // rows
+  for (let r = 0; r < size; r++) {
+    const row = [];
+    for (let c = 0; c < size; c++) row.push(r * size + c);
+    combos.push(row);
+  }
+  // cols
+  for (let c = 0; c < size; c++) {
+    const col = [];
+    for (let r = 0; r < size; r++) col.push(r * size + c);
+    combos.push(col);
+  }
+  // diag \
+  const d1 = [];
+  for (let i = 0; i < size; i++) d1.push(i * size + i);
+  combos.push(d1);
+  // diag /
+  const d2 = [];
+  for (let i = 0; i < size; i++) d2.push(i * size + (size - 1 - i));
+  combos.push(d2);
+  return combos;
+}
+
+function initTTT() {
+  tttSize = 3;
+  tttBoard = Array(tttSize * tttSize).fill('');
+  tttGameOver = false;
+  renderTTTBoard();
+  document.getElementById('ttt-status').textContent = 'Your turn (X)';
+  updateTTTScores();
+}
+
+function renderTTTBoard() {
+  const board = document.getElementById('ttt-board');
+  board.style.gridTemplateColumns = `repeat(${tttSize}, 1fr)`;
+  board.style.maxWidth = `${tttSize * 100 + (tttSize - 1) * 10}px`;
+  const cellSize = tttSize === 3 ? '36px' : tttSize === 4 ? '28px' : tttSize === 5 ? '22px' : '18px';
+  board.innerHTML = '';
+  tttBoard.forEach((cell, i) => {
+    const div = document.createElement('div');
+    div.className = `ttt-cell${cell ? ' filled ' + cell.toLowerCase() : ''}`;
+    div.style.fontSize = cellSize;
+    div.textContent = cell;
+    div.onclick = () => tttClick(i);
+    board.appendChild(div);
+  });
+}
+
+function updateTTTScores() {
+  document.getElementById('ttt-p-score').textContent = tttPlayerScore;
+  document.getElementById('ttt-c-score').textContent = tttCPUScore;
+  document.getElementById('ttt-d-score').textContent = `${tttSize}×${tttSize}`;
+}
+
+function checkTTTWinner(board, player, size) {
+  return getWinCombos(size).find(combo => combo.every(i => board[i] === player)) || null;
+}
+
+function expandBoard() {
+  const newSize = tttSize + 1;
+  const newBoard = Array(newSize * newSize).fill('');
+  // Copy old board into top-left
+  for (let r = 0; r < tttSize; r++) {
+    for (let c = 0; c < tttSize; c++) {
+      newBoard[r * newSize + c] = tttBoard[r * tttSize + c];
+    }
+  }
+  tttSize = newSize;
+  tttBoard = newBoard;
+  document.getElementById('ttt-status').textContent = `🔥 Board full! Expanded to ${tttSize}×${tttSize} — keep playing!`;
+  renderTTTBoard();
+  updateTTTScores();
+  setTimeout(() => {
+    if (!tttGameOver) document.getElementById('ttt-status').textContent = 'Your turn (X)';
+  }, 2000);
+}
+
+function tttClick(index) {
+  if (tttBoard[index] || tttGameOver) return;
+  playSound('click');
+  tttBoard[index] = 'X';
+  renderTTTBoard();
+  const win = checkTTTWinner(tttBoard, 'X', tttSize);
+  if (win) {
+    highlightWin(win);
+    tttGameOver = true;
+    tttPlayerScore++;
+    saveScore('Tic Tac Toe', tttPlayerScore * 10);
+    updateTTTScores();
+    document.getElementById('ttt-status').textContent = '🎉 You Win!';
+    setTimeout(() => showWinPopup('🎉', 'You Win!', 'Great move! You defeated the CPU!', '↺ Play Again', tttRestart), 700);
+    return;
+  }
+  // Check if board is full — expand instead of draw
+  if (tttBoard.every(c => c)) {
+    expandBoard();
+    return;
+  }
+  document.getElementById('ttt-status').textContent = '🤖 CPU thinking...';
+  tttGameOver = true;
+  setTimeout(() => { tttCPUMove(); tttGameOver = false; }, 500);
+}
+
+function tttCPUMove() {
+  const combos = getWinCombos(tttSize);
+  let move = -1;
+  // Try to win
+  for (const combo of combos) {
+    const vals = combo.map(i => tttBoard[i]);
+    if (vals.filter(v => v === 'O').length === tttSize - 1 && vals.includes('')) {
+      move = combo[vals.indexOf('')]; break;
+    }
+  }
+  // Try to block
+  if (move === -1) {
+    for (const combo of combos) {
+      const vals = combo.map(i => tttBoard[i]);
+      if (vals.filter(v => v === 'X').length === tttSize - 1 && vals.includes('')) {
+        move = combo[vals.indexOf('')]; break;
+      }
+    }
+  }
+  // Center
+  const center = Math.floor(tttSize / 2) * tttSize + Math.floor(tttSize / 2);
+  if (move === -1 && !tttBoard[center]) move = center;
+  // Random empty
+  if (move === -1) {
+    const empty = tttBoard.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
+    if (empty.length) move = empty[Math.floor(Math.random() * empty.length)];
+  }
+  if (move === -1) return;
+  tttBoard[move] = 'O';
+  renderTTTBoard();
+  const win = checkTTTWinner(tttBoard, 'O', tttSize);
+  if (win) {
+    highlightWin(win);
+    tttGameOver = true;
+    tttCPUScore++;
+    updateTTTScores();
+    document.getElementById('ttt-status').textContent = '💀 CPU Wins!';
+    playSound('lose');
+    return;
+  }
+  // Board full again — expand
+  if (tttBoard.every(c => c)) {
+    expandBoard();
+    return;
+  }
+  document.getElementById('ttt-status').textContent = 'Your turn (X)';
+}
+
+function highlightWin(combo) {
+  const cells = document.querySelectorAll('.ttt-cell');
+  combo.forEach(i => cells[i].classList.add('win'));
+}
+
+function tttRestart() {
+  playSound('click');
+  initTTT();
+}
+
+// ============================================================
+// IPL 2026 QUIZ — 40 questions, 10 random each round
+// ============================================================
+const ALL_QUIZ_QUESTIONS = [
+  // --- IPL 2026 CURRENT SEASON ---
+  { q: "Who is the leading run-scorer in IPL 2026 so far?", opts: ["Rohit Sharma", "Virat Kohli", "Sanju Samson", "KL Rahul"], ans: 1 },
+  { q: "Who scored the highest individual innings in IPL 2026 — 152* off 67 balls?", opts: ["Virat Kohli", "Sanju Samson", "KL Rahul", "Rohit Sharma"], ans: 2 },
+  { q: "Which 15-year-old became the youngest centurion in IPL history in 2025 and starred again in 2026?", opts: ["Yashasvi Jaiswal", "Vaibhav Sooryavanshi", "Ayush Mhatre", "Tilak Varma"], ans: 1 },
+  { q: "Vaibhav Sooryavanshi plays for which IPL franchise?", opts: ["Mumbai Indians", "Chennai Super Kings", "Gujarat Titans", "Rajasthan Royals"], ans: 3 },
+  { q: "Who hit the fastest century of the IPL 2026 season so far (in 36 balls vs MI)?", opts: ["KL Rahul", "Tilak Varma", "Vaibhav Sooryavanshi", "Sanju Samson"], ans: 2 },
+  { q: "Which player scored two centuries in IPL 2026 — the only batter to do so this season?", opts: ["Virat Kohli", "KL Rahul", "Sanju Samson", "Abhishek Sharma"], ans: 2 },
+  { q: "Sanju Samson represents which team in IPL 2026?", opts: ["Rajasthan Royals", "Chennai Super Kings", "Kolkata Knight Riders", "Sunrisers Hyderabad"], ans: 1 },
+  { q: "Who leads the IPL 2026 Purple Cap (most wickets) with 17 wickets from 10 matches?", opts: ["Jasprit Bumrah", "Anshul Kamboj", "Bhuvneshwar Kumar", "Josh Hazlewood"], ans: 2 },
+  { q: "Anshul Kamboj, who also has 17 wickets in IPL 2026, plays for which team?", opts: ["RCB", "MI", "CSK", "GT"], ans: 2 },
+  { q: "Who bowled the best figures in IPL 2026 with 5/23 against KKR?", opts: ["Bhuvneshwar Kumar", "Mohsin Khan", "Jofra Archer", "Prasidh Krishna"], ans: 1 },
+  { q: "Vaibhav Sooryavanshi has scored approximately how many sixes in IPL 2026 alone?", opts: ["18", "25", "37", "45"], ans: 2 },
+  { q: "Which duo — Hazlewood and Bhuvneshwar — bowled out Delhi Capitals for just 75 runs in IPL 2026?", opts: ["Mumbai Indians", "Punjab Kings", "Royal Challengers Bengaluru", "Kolkata Knight Riders"], ans: 2 },
+  { q: "Tilak Varma's fastest century in IPL 2026 came off how many balls?", opts: ["38", "42", "45", "52"], ans: 2 },
+  { q: "Who scored 123* off 52 balls for MI against Gujarat Titans in IPL 2026?", opts: ["Rohit Sharma", "Tilak Varma", "Hardik Pandya", "Ryan Rickelton"], ans: 3 },
+  { q: "Which team has scored the most centuries (3) in IPL 2026?", opts: ["Chennai Super Kings", "Rajasthan Royals", "Mumbai Indians", "RCB"], ans: 2 },
+  { q: "Which bowler is leading the most dot balls in IPL 2026 among seamers?", opts: ["Jasprit Bumrah", "Bhuvneshwar Kumar", "Anshul Kamboj", "Josh Hazlewood"], ans: 2 },
+  { q: "KL Rahul scored 152* in IPL 2026 playing for which team?", opts: ["Lucknow Super Giants", "Kolkata Knight Riders", "Delhi Capitals", "Punjab Kings"], ans: 2 },
+  { q: "Sai Sudharsan scored a century in IPL 2026 for which team?", opts: ["Chennai Super Kings", "Sunrisers Hyderabad", "Gujarat Titans", "Rajasthan Royals"], ans: 2 },
+  { q: "Which team chased down 265 — the highest successful run chase in IPL history — in 2026?", opts: ["Mumbai Indians", "Punjab Kings", "RCB", "Delhi Capitals"], ans: 1 },
+  { q: "Lucknow Super Giants are leading which bowling stat in IPL 2026?", opts: ["Most wickets", "Dot-ball control", "Most maidens", "Best economy"], ans: 1 },
+  // --- ALL-TIME IPL RECORDS ---
+  { q: "Who is the all-time highest run-scorer in IPL history?", opts: ["Rohit Sharma", "David Warner", "Virat Kohli", "Suresh Raina"], ans: 2 },
+  { q: "Virat Kohli has scored how many IPL centuries — the most by any player ever?", opts: ["5", "6", "7", "8"], ans: 3 },
+  { q: "Who holds the record for most wickets in IPL history (205+)?", opts: ["Lasith Malinga", "Dwayne Bravo", "Amit Mishra", "Yuzvendra Chahal"], ans: 3 },
+  { q: "What is the highest team total in IPL history — 287/3 scored by SRH in 2024?", opts: ["267/3", "277/3", "287/3", "295/4"], ans: 2 },
+  { q: "Which teams have won the most IPL titles — 5 each?", opts: ["MI & KKR", "MI & CSK", "CSK & RCB", "MI & RCB"], ans: 1 },
+  { q: "Who scored the first-ever century in IPL history in the inaugural match?", opts: ["Sachin Tendulkar", "Brendon McCullum", "Adam Gilchrist", "Virender Sehwag"], ans: 1 },
+  { q: "Chris Gayle's 30-ball century in IPL is the fastest ever. Who did he score it against?", opts: ["MI", "RCB", "PBKS", "PWI"], ans: 3 },
+  { q: "Which bowler held the IPL record for most wickets before Yuzvendra Chahal?", opts: ["Amit Mishra", "Dwayne Bravo", "Lasith Malinga", "Harbhajan Singh"], ans: 2 },
+  { q: "Dwayne Bravo and Harshal Patel share the record for most wickets in a single IPL season — how many?", opts: ["28", "30", "32", "35"], ans: 2 },
+  { q: "Which stadium hosted the first-ever IPL match in 2008?", opts: ["Wankhede Stadium", "Eden Gardens", "Chinnaswamy Stadium", "DY Patil Stadium"], ans: 1 },
+  // --- TEAMS & FORMATS ---
+  { q: "How many teams currently compete in the IPL?", opts: ["8", "9", "10", "12"], ans: 2 },
+  { q: "What does 'Impact Player' rule allow in the IPL?", opts: ["Extra over", "Substitute a player mid-match", "Two free hits per over", "Bat twice in an innings"], ans: 1 },
+  { q: "How many overseas players can play in the IPL playing XI?", opts: ["3", "4", "5", "6"], ans: 1 },
+  { q: "Gujarat Titans have the highest win percentage in IPL history — approximately how much?", opts: ["52%", "57%", "62%", "68%"], ans: 2 },
+  { q: "Which team did NOT exist when the IPL started in 2008?", opts: ["Rajasthan Royals", "Gujarat Titans", "Mumbai Indians", "Chennai Super Kings"], ans: 1 },
+  { q: "The Orange Cap in IPL is awarded to the:", opts: ["Best bowler of the season", "Top fielder of the season", "Top run-scorer of the season", "Most sixes hit in the season"], ans: 2 },
+  { q: "What is the Purple Cap awarded for in the IPL?", opts: ["Most catches", "Most dot balls", "Most wickets in the season", "Best bowling economy"], ans: 2 },
+  { q: "Which team did Vaibhav Sooryavanshi score his record 103 off 37 balls against in IPL 2026?", opts: ["Gujarat Titans", "Mumbai Indians", "Chennai Super Kings", "Sunrisers Hyderabad"], ans: 3 },
+  { q: "What milestone did Vaibhav Sooryavanshi become the youngest player to reach at 15 years and 29 days?", opts: ["500 T20 runs", "1,000 T20 runs", "50 T20 sixes", "1,000 IPL balls faced"], ans: 1 },
+  { q: "Mohsin Khan's best bowling figures of 5/23 in IPL 2026 came against which team?", opts: ["Mumbai Indians", "Chennai Super Kings", "Kolkata Knight Riders", "Delhi Capitals"], ans: 2 },
+];
+
+// Fisher-Yates shuffle
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let quizQuestions = [], quizIndex = 0, quizScore = 0, quizAnswered = false;
+
+function initQuiz() {
+  quizQuestions = shuffleArray(ALL_QUIZ_QUESTIONS).slice(0, 10);
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  document.getElementById('quiz-result').classList.remove('show');
+  document.getElementById('quiz-result').style.display = 'none';
+  document.querySelector('.quiz-meta').style.display = 'flex';
+  document.getElementById('quiz-question').style.display = 'flex';
+  document.getElementById('quiz-options').style.display = 'grid';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  quizAnswered = false;
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quiz-qnum').textContent = `Q ${quizIndex + 1} / ${quizQuestions.length}`;
+  document.getElementById('quiz-prog').style.width = `${((quizIndex + 1) / quizQuestions.length) * 100}%`;
+  document.getElementById('quiz-score-disp').textContent = `Score: ${quizScore}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = q.opts.map((o, i) => `<button class="quiz-opt" onclick="quizAnswer(${i})">${o}</button>`).join('');
+  document.getElementById('btn-next').classList.remove('show');
+}
+
+function quizAnswer(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+  if (idx === q.ans) {
+    quizScore++;
+    playSound('correct');
+  } else {
+    playSound('wrong');
+  }
+  document.getElementById('quiz-score-disp').textContent = `Score: ${quizScore}`;
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function quizNext() {
+  playSound('click');
+  quizIndex++;
+  if (quizIndex >= quizQuestions.length) {
+    showQuizResult();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+function showQuizResult() {
+  document.querySelector('.quiz-meta').style.display = 'none';
+  document.getElementById('quiz-question').style.display = 'none';
+  document.getElementById('quiz-options').style.display = 'none';
+  document.getElementById('btn-next').classList.remove('show');
+
+  const r = document.getElementById('quiz-result');
+  r.style.display = 'block';
+  r.classList.add('show');
+
+  const pct = quizScore / quizQuestions.length;
+  document.getElementById('result-score').textContent = `${quizScore} / ${quizQuestions.length}`;
+  let emoji, msg;
+  if (pct >= 0.9) { emoji = '🏆'; msg = 'Legendary IPL Master!'; }
+  else if (pct >= 0.7) { emoji = '🌟'; msg = 'Excellent! You know your IPL!'; }
+  else if (pct >= 0.5) { emoji = '👍'; msg = 'Good effort! Keep watching IPL!'; }
+  else { emoji = '😅'; msg = 'Better luck next time! Watch more cricket!'; }
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-msg').textContent = msg;
+
+  saveScore('IPL 2026 Quiz', quizScore * 10);
+  if (pct >= 0.7) playSound('win');
+}
+
+function quizRestart() {
+  playSound('click');
+  initQuiz();
+}
+
+// ============================================================
+// MEMORY CARD GAME
+// ============================================================
+const memEmojis = ['🏏','⚡','🎯','🎮','🚀','💎','🔥','🌟'];
+let memCards = [], memFlipped = [], memMatched = 0, memMoves = 0;
+let memTimerInterval = null, memSeconds = 0, memGameActive = false;
+
+function initMemory() {
+  clearInterval(memTimerInterval);
+  memSeconds = 0; memMoves = 0; memMatched = 0; memFlipped = []; memGameActive = false;
+  const pairs = [...memEmojis, ...memEmojis];
+  memCards = pairs.map((e, i) => ({ id: i, emoji: e, flipped: false, matched: false }))
+    .sort(() => Math.random() - 0.5);
+  renderMemBoard();
+  updateMemStats();
+}
+
+function renderMemBoard() {
+  const board = document.getElementById('memory-board');
+  board.innerHTML = '';
+  memCards.forEach((card, i) => {
+    const div = document.createElement('div');
+    div.className = `mem-card${card.flipped ? ' flipped' : ''}${card.matched ? ' matched' : ''}`;
+    div.innerHTML = `
+      <div class="mem-card-inner">
+        <div class="mem-card-front">?</div>
+        <div class="mem-card-back">${card.emoji}</div>
+      </div>`;
+    div.onclick = () => memFlip(i);
+    board.appendChild(div);
+  });
+}
+
+function memFlip(index) {
+  if (!memGameActive) {
+    memGameActive = true;
+    memTimerInterval = setInterval(() => {
+      memSeconds++;
+      const m = Math.floor(memSeconds / 60);
+      const s = memSeconds % 60;
+      document.getElementById('mem-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    }, 1000);
+  }
+  const card = memCards[index];
+  if (card.flipped || card.matched || memFlipped.length === 2) return;
+  playSound('flip');
+  card.flipped = true;
+  memFlipped.push(index);
+  renderMemBoard();
+  if (memFlipped.length === 2) {
+    memMoves++;
+    updateMemStats();
+    const [a, b] = memFlipped;
+    if (memCards[a].emoji === memCards[b].emoji) {
+      memCards[a].matched = memCards[b].matched = true;
+      memMatched++;
+      memFlipped = [];
+      renderMemBoard();
+      updateMemStats();
+      playSound('match');
+      if (memMatched === 8) {
+        clearInterval(memTimerInterval);
+        memGameActive = false;
+        const m = Math.floor(memSeconds / 60);
+        const s = memSeconds % 60;
+        saveScore('Memory Cards', Math.max(0, 1000 - memMoves * 20 - memSeconds * 5));
+        setTimeout(() => showWinPopup('🃏', 'All Matched!', `Completed in ${m}:${s.toString().padStart(2,'0')} with ${memMoves} moves!`, '↺ Play Again', memRestart), 400);
+      }
+    } else {
+      setTimeout(() => {
+        memCards[a].flipped = false;
+        memCards[b].flipped = false;
+        memFlipped = [];
+        renderMemBoard();
+      }, 900);
+    }
+  }
+}
+
+function updateMemStats() {
+  document.getElementById('mem-moves').textContent = memMoves;
+  document.getElementById('mem-pairs').textContent = `${memMatched} / 8`;
+}
+
+function stopMemTimer() { clearInterval(memTimerInterval); memGameActive = false; }
+
+function memRestart() {
+  playSound('click');
+  stopMemTimer();
+  initMemory();
+}
+
+// ============================================================
+// ROCK PAPER SCISSORS
+// ============================================================
+const rpsEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
+const rpsChoices = ['rock', 'paper', 'scissors'];
+let rpsPS = 0, rpsCS = 0, rpsDS = 0;
+
+function initRPS() {
+  rpsPS = 0; rpsCS = 0; rpsDS = 0;
+  document.getElementById('rps-p-hand').textContent = '❓';
+  document.getElementById('rps-c-hand').textContent = '❓';
+  document.getElementById('rps-result').textContent = '';
+  document.getElementById('rps-result').className = 'rps-result-text';
+  updateRPSScores();
+}
+
+function rpsPlay(choice) {
+  const cpu = rpsChoices[Math.floor(Math.random() * 3)];
+  const ph = document.getElementById('rps-p-hand');
+  const ch = document.getElementById('rps-c-hand');
+  const res = document.getElementById('rps-result');
+
+  ph.textContent = rpsEmojis[choice];
+  ch.textContent = rpsEmojis[cpu];
+
+  ph.classList.add('rps-bounce');
+  ch.classList.add('rps-bounce');
+  setTimeout(() => { ph.classList.remove('rps-bounce'); ch.classList.remove('rps-bounce'); }, 400);
+
+  let result, cls;
+  if (choice === cpu) {
+    result = "🤝 It's a Draw!"; cls = 'draw'; rpsDS++; playSound('click');
+  } else if ((choice==='rock'&&cpu==='scissors')||(choice==='paper'&&cpu==='rock')||(choice==='scissors'&&cpu==='paper')) {
+    result = "🎉 You Win!"; cls = 'win'; rpsPS++; playSound('win'); saveScore('Rock Paper Scissors', rpsPS * 10);
+  } else {
+    result = "💀 CPU Wins!"; cls = 'lose'; rpsCS++; playSound('lose');
+  }
+  res.textContent = result;
+  res.className = `rps-result-text ${cls}`;
+  updateRPSScores();
+}
+
+function updateRPSScores() {
+  document.getElementById('rps-p-score').textContent = rpsPS;
+  document.getElementById('rps-c-score').textContent = rpsCS;
+  document.getElementById('rps-d-score').textContent = rpsDS;
+}
+
+function rpsReset() {
+  playSound('click');
+  initRPS();
+}
+</script>
+</body>
+</html>
